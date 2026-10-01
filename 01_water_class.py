@@ -100,9 +100,10 @@ sse_end = []
 sse_k = []
 p_value = [0]
 
+data_dir = r'./data' 
+img_dir = os.path.join(data_dir, 'Uncorrected image')
+outputDir = os.path.join(data_dir, 'water_class image')
 
-img_dir = r'Y:\zfr\17-xiaolunwen2\major_revise\submission\data\Uncorrected image'  #输入影像文件夹路径
-outputDir = r'Y:\zfr\17-xiaolunwen2\major_revise\submission\data\water_class image'  #输出文件夹路径
 wavelength = {'B1': 0.485,'B2': 0.555, 'B3': 0.675, 'B4': 0.789}  #GF-1影像各波段波长
 for img in os.listdir(img_dir):
     if not(img.endswith('.tif')):
