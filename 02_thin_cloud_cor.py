@@ -491,9 +491,11 @@ def create_algae_buffer(mask_array, buffer_size=3):
 
 # 构建查找表
 #高层云 (162,7,4)
-T_altostratus = np.array(extract_MODTRAN(r'Y:\zfr\17-xiaolunwen2\major_revise\submission\data\LUT\高层云计算结果-GF1.txt','T'))
-R_altostratus = np.array(extract_MODTRAN(r'Y:\zfr\17-xiaolunwen2\major_revise\submission\data\LUT\高层云计算结果-GF1.txt', 'R'))
-T_slope_altostratus = np.array(extract_MODTRAN(r'Y:\zfr\17-xiaolunwen2\major_revise\submission\data\LUT\高层云计算结果-GF1.txt', 'T_slope'))
+data_dir = r'./data'
+lut_dir = os.path.join(data_dir, 'LUT')
+T_altostratus = np.array(extract_MODTRAN(os.path.join(lut_dir, '高层云计算结果-GF1.txt'),'T'))
+R_altostratus = np.array(extract_MODTRAN(os.path.join(lut_dir, '高层云计算结果-GF1.txt'), 'R'))
+T_slope_altostratus = np.array(extract_MODTRAN(os.path.join(lut_dir, '高层云计算结果-GF1.txt'), 'T_slope'))
 print(T_slope_altostratus.shape)
 
 # #卷云 (162,7,4)
@@ -507,20 +509,20 @@ sun_zenith = np.array([10, 20, 30])  # 太阳天顶角
 sat_zenith = np.array([0, 10, 20, 30, 40, 50])  # 卫星天顶角
 aerosol_od = np.array([0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5])  # 气溶胶光学厚度
 cloud_od = np.array([0.06, 0.3, 0.54, 0.78, 1.02, 1.26, 1.5])  # 云光学厚度
-wavelengths = np.array([0.485, 0.555, 0.660, 0.830])  # 波长 (nm)
+wavelengths = np.array([0.485, 0.555, 0.660, 0.830])  # 波长 (μm)
 
 
 #生成高层云的三个数据的查找表
 lookup_table_T_altostratus = create_5d_simulation_data(T_altostratus)
-lookup_table_T_altostratus_output_path = r'Y:\zfr\17-xiaolunwen2\major_revise\submission\data\LUT\lookup_table_T_altostratus.nc'
+lookup_table_T_altostratus_output_path = os.path.join(lut_dir, 'lookup_table_T_altostratus.nc')
 save_lookup_table(lookup_table_T_altostratus, lookup_table_T_altostratus_output_path)
 
 lookup_table_R_altostratus = create_5d_simulation_data(R_altostratus)
-lookup_table_R_altostratus_output_path = r'Y:\zfr\17-xiaolunwen2\major_revise\submission\data\LUT\lookup_table_R_altostratus.nc'
+lookup_table_R_altostratus_output_path = os.path.join(lut_dir, 'lookup_table_R_altostratus.nc')
 save_lookup_table(lookup_table_R_altostratus, lookup_table_R_altostratus_output_path)
 
 lookup_table_T_slope_altostratus = create_5d_simulation_data(T_slope_altostratus)
-lookup_table_T_slope_altostratus_output_path = r'Y:\zfr\17-xiaolunwen2\major_revise\submission\data\LUT\lookup_table_T_slope_altostratus.nc'
+lookup_table_T_slope_altostratus_output_path = os.path.join(lut_dir, 'lookup_table_T_slope_altostratus.nc')
 save_lookup_table(lookup_table_T_slope_altostratus, lookup_table_T_slope_altostratus_output_path)
 
 # #生成卷云的三个数据的查找表
@@ -552,16 +554,17 @@ lookup_altostratus = dict([("T", lookup_T_altostratus), ("R", lookup_R_altostrat
 
 
 #输入数据路径
-water_class_dir = r'Y:\zfr\17-xiaolunwen2\major_revise\submission\data\water_class image'  #水体分类影像
-xml_dir = r'Y:\zfr\17-xiaolunwen2\major_revise\submission\data\Uncorrected image_xml'  #原始影像的元数据.xml
-img_dir = r'Y:\zfr\17-xiaolunwen2\major_revise\submission\data\Uncorrected image'  #待校正影像，经过了辐射定标 RPC校正和裁剪
-macroalgae_mask_dir = r'Y:\zfr\17-xiaolunwen2\major_revise\submission\data\algae_mask image'  #藻类像元掩膜
-HDR_dir = r'Y:\zfr\17-xiaolunwen2\major_revise\submission\data\Uncorrected image_hdr'  #在ENVI中经过辐射定标后的HDR文件
-out_toa_dir = r'Y:\zfr\17-xiaolunwen2\major_revise\submission\data\corrected_TOA'  #输出的薄云矫正后TOA反射率影像的文件夹路径
-out_rad_dir = r'Y:\zfr\17-xiaolunwen2\major_revise\submission\data\corrected_TOA_to_radiance' #对校正后影像的TOA反射率转换为辐亮度，方便后续大气校正
-
+water_class_dir = os.path.join(data_dir, 'water_class image')
+xml_dir = os.path.join(data_dir, 'Uncorrected image_xml')
+img_dir = os.path.join(data_dir, 'Uncorrected image')
+macroalgae_mask_dir = os.path.join(data_dir, 'algae_mask image')
+HDR_dir = os.path.join(data_dir, 'Uncorrected image_hdr')
+out_toa_dir = os.path.join(data_dir, 'corrected_TOA')
+out_rad_dir = os.path.join(data_dir, 'corrected_TOA_to_radiance')
+os.makedirs(out_toa_dir, exist_ok=True)
+os.makedirs(out_rad_dir, exist_ok=True)
 #AOD年均值
-aod = { '2017' :0.465, '2018':0.378, '2019':0.393, '2020':0.437, '2021':0.356, '2022':0.355, '2023':0.396}
+aod = { '2017' :0.465, '2018':0.379, '2019':0.394, '2020':0.438, '2021':0.356, '2022':0.355, '2023':0.397}
 
 #薄云校正
 for RGB_img in os.listdir(img_dir):
@@ -580,6 +583,9 @@ for RGB_img in os.listdir(img_dir):
             xml_path = os.path.join(xml_dir, xml)
             print(xml_path)
             break
+    if xml_path is None:
+        print(f'XML metadata not found for {filename}')
+        continue
 
     #搜索water_class文件
     for waterclass in os.listdir(water_class_dir):
@@ -589,6 +595,9 @@ for RGB_img in os.listdir(img_dir):
             waterclass_path = os.path.join(water_class_dir, waterclass)
             print(waterclass_path)
             break
+    if waterclass_path is None:
+        print(f'water class image not found for {filename}')
+        continue
 
     #搜索macroalgae_mask文件
     for mask in os.listdir(macroalgae_mask_dir):
@@ -598,6 +607,9 @@ for RGB_img in os.listdir(img_dir):
             mask_path = os.path.join(macroalgae_mask_dir, mask)
             print(mask_path)
             break
+    if mask_path is None:
+        print(f'algal mask image not found for {filename}')
+        continue
 
 
     #获取太阳天顶角、卫星观测天顶角、太阳方位角和卫星方位角
@@ -607,7 +619,7 @@ for RGB_img in os.listdir(img_dir):
     #判断是否有耀光,如果存在耀光，则不进行薄云校正
     if abs(sun_azimuth - sate_azimuth)>150:
         print('此文件可能存在耀光')
-        #continue
+        continue
 
     #利用查找表获取不同云光学厚度下、不同波长的T和R  7*4
     reflectance_matrix_T_altostratus = lookup_altostratus["T"].get_reflectance_matrix(sun_zenith, sate_zenith, aod[year])
